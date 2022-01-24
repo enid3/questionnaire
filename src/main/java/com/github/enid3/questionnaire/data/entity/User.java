@@ -3,6 +3,7 @@ package com.github.enid3.questionnaire.data.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 @Entity
 @Data
@@ -12,10 +13,21 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String email;
-    private String password;
+    @NotBlank
+    @Size(min=2, max=30)
     private String firstName;
+    @NotBlank
+    @Size(min=2, max=30)
     private String lastName;
+
+    @NotNull
+    @Email
+    private String email;
+
+    @NotBlank
+    @Size(min=8, max=100)
+    private String password;
+
     private String phoneNumber;
 
 }

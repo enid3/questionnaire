@@ -1,42 +1,55 @@
 package com.github.enid3.questionnaire.data.entity;
 
-import com.github.enid3.questionnaire.data.dto.FieldDTO;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Arrays;
+import javax.validation.constraints.*;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Data
-@Table(name="fields")
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Field {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotBlank
+    @Size(max=100)
     private String label;
-    private FieldType type;
 
-    private Boolean isRequired;
-    private Boolean isActive;
+    @NotNull
+    private Type type;
 
-    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @NotNull
+    private Boolean isRequired = true;
+    @NotNull
+    private Boolean isActive = true;
+
+
+    @NotNull
+    @ElementCollection(fetch = FetchType.LAZY)
     private Set<String> options = new HashSet<>();
 
-    public Field() {}
-    public Field(FieldDTO dto) {
-        this.id = dto.getId();
-        this.label = dto.getLabel();
-        this.type = dto.getType();
-        this.isRequired = dto.getIsRequired();
-        this.isActive = dto.getIsActive();
-        this.options = new HashSet<>(Arrays
-                        .stream(dto.getOptions().split("\n"))
-                        .collect(Collectors.toSet()));
+    public enum Type {
+        SINGLE_LINE_TEXT("Single line text"),
+        MULTILINE_TEXT("Multiline text"),
+        RADIO_BUTTON("Radio button"),
+        CHECKBOX("Checkbox"),
+        COMBOBOX("Combobox"),
+        DATE("Date");
+
+        final private String description;
+
+        Type (String description) {
+            this.description = description;
+        }
+
+        public String getDescription() {
+            return description;
+        }
     }
 }

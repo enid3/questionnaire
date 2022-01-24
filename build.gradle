@@ -36,6 +36,8 @@ dependencies {
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	//testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'javax.validation:validation-api'
+	implementation 'org.hibernate:hibernate-validator:7.0.2.Final'
 }
 
 test {
