@@ -1,9 +1,15 @@
 package com.github.enid3.questionnaire.service;
 
-import com.github.enid3.questionnaire.data.entity.User;
+import com.github.enid3.questionnaire.data.dto.user.UserDTO;
+import com.github.enid3.questionnaire.data.dto.user.UserResponseDTO;
+import com.github.enid3.questionnaire.data.dto.user.UserUpdateDTO;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 public interface UserService {
-    boolean register(User user);
-    boolean update(String email, User newUserData);
-    boolean changePassword(String email, String oldPassword, String newPassword);
+    UserResponseDTO getUser(String email);
+    UserResponseDTO createUser(UserDTO userDTO);
+    UserResponseDTO updateUser(String email, UserUpdateDTO userUpdateDTO);
+    boolean userExists(long id);
+    boolean changeUserPassword(String email, String newPassword);
 }

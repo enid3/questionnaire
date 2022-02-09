@@ -1,97 +1,66 @@
 package com.github.enid3.questionnaire.controller.api.v1;
 
-import com.github.enid3.questionnaire.data.dto.LabelDTO;
-import com.github.enid3.questionnaire.data.entity.Field;
-import com.github.enid3.questionnaire.data.entity.User;
-import com.github.enid3.questionnaire.data.repository.FieldsRepository;
-import com.github.enid3.questionnaire.data.repository.UserRepository;
+import com.github.enid3.questionnaire.data.dto.field.FieldDTO;
+import com.github.enid3.questionnaire.data.dto.field.FieldLabelDTO;
+import com.github.enid3.questionnaire.data.dto.field.FieldUpdateDTO;
+import com.github.enid3.questionnaire.service.FieldService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/field")
 @Slf4j
+@RequiredArgsConstructor
 public class FieldController {
-    private FieldsRepository fieldsRepository;
-    @Autowired
-    private UserRepository userRepository;
-
-
-    @Autowired
-    public FieldController(FieldsRepository fieldsRepository){
-        this.fieldsRepository = fieldsRepository;
-    }
+    private final FieldService fieldService;
 
     @GetMapping
-    public Page<Field> getFields(
+    public Page<FieldDTO> getAllFields(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam(defaultValue="0", required=false) Integer page,
-            @RequestParam(defaultValue="0", required = false) Integer count
+            Pageable pageable
     ) {
-        Pageable pageable = Pageable.unpaged();
-        if(count != 0) {
-            pageable = PageRequest.of(page, count, Sort.by("id").ascending());
-        }
-        log.info("User details: {}", userDetails);
-        User owner = userRepository.findByEmail(userDetails.getUsername());
-        return fieldsRepository.findAllByOwner(pageable, owner);
-    }
-
-    //@GetMapping("/{id}")
-    public Field getField(
-            @PathVariable Long id
-    ) {
-        return  fieldsRepository.getById(id);
+        return fieldService.getAllFieldsByOwner(userDetails.getUsername(), pageable);
     }
 
     @GetMapping("/label")
-    public List<LabelDTO> getLabels(
+    public List<FieldLabelDTO> getAllLabels(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        User owner = userRepository.findByEmail(userDetails.getUsername());
-        return fieldsRepository.findAllLabelsByOwnerId(owner.getId());
+        return fieldService.getAllLabelsByOwner(userDetails.getUsername());
     }
 
     @PostMapping
-    public Field saveField(
+    public FieldDTO createField(
             @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody Field field,
-            Errors errors
+            @RequestBody FieldDTO fieldDTO
     ) {
-        User owner = userRepository.findByEmail(userDetails.getUsername());
-        if(field.getId() == null || (owner.getId().equals(field.getId()))) {
-            if(errors.hasErrors()) {
-                throw new RuntimeException("has errors");
-            }
-            field.setOwner(owner);
-            return fieldsRepository.save(field);
-        }
-        throw new BadCredentialsException("not owner of field");
+        return fieldService.createField(userDetails.getUsername(), fieldDTO);
+    }
+
+    @PostMapping("/{id}")
+    public FieldDTO updateField(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable long id,
+            @RequestBody FieldUpdateDTO fieldUpdateDTO
+    ) {
+        return fieldService.updateField(id, fieldUpdateDTO);
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public void deleteField(
             @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long id
+            @PathVariable long id
     ) {
-        User owner = userRepository.findByEmail(userDetails.getUsername());
-        Field fieldToDelete = fieldsRepository.getById(id);
-        if(owner.getId().equals(fieldToDelete.getId())) {
-            fieldsRepository.deleteById(id);
-        }
-        throw new BadCredentialsException("not owner of field");
+        fieldService.deleteField(id);
     }
 
 }

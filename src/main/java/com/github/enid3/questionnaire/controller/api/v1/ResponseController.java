@@ -1,76 +1,47 @@
 package com.github.enid3.questionnaire.controller.api.v1;
 
-import com.github.enid3.questionnaire.data.dto.ResponseDTO;
-import com.github.enid3.questionnaire.data.entity.Field;
-import com.github.enid3.questionnaire.data.entity.Response;
-import com.github.enid3.questionnaire.data.entity.User;
-import com.github.enid3.questionnaire.data.repository.FieldsRepository;
-import com.github.enid3.questionnaire.data.repository.ResponseRepository;
-import com.github.enid3.questionnaire.data.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
-import org.springframework.validation.Errors;
+import com.github.enid3.questionnaire.data.dto.response.ResponseDTO;
+import com.github.enid3.questionnaire.service.ResponseService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/response")
+@Slf4j
+@RequiredArgsConstructor
 public class ResponseController {
-    ResponseRepository responseRepository;
-    @Autowired
-    UserRepository userRepository;
-    FieldsRepository fieldsRepository;
-
-    @Autowired
-    public ResponseController(ResponseRepository responseRepository,
-                              FieldsRepository fieldsRepository) {
-        this.responseRepository = responseRepository;
-        this.fieldsRepository = fieldsRepository;
-    }
+    private final ResponseService responseService;
+    private final SimpMessageSendingOperations messageSendingOperations;
 
     @GetMapping
     public Page<ResponseDTO> getResponses(
-            @RequestParam(defaultValue="0", required=false) Integer page,
-            @RequestParam(defaultValue="0", required = false) Integer count
+            @AuthenticationPrincipal UserDetails userDetails,
+            Pageable pageable
     ) {
-        Pageable pageable = Pageable.unpaged();
-        if(count != 0) {
-            pageable = PageRequest.of(page, count, Sort.by("id").ascending());
-        }
-        List<Response> responseList = responseRepository.findAll();
-        List<ResponseDTO> responseDTOS =
-                responseList.stream()
-                        .map(ResponseDTO::new)
-                        .collect(Collectors.toList());
-        if(pageable.isPaged()) {
-            int start = (int)pageable.getOffset();
-            int end = Math.min((start + pageable.getPageSize()), responseDTOS.size());
-            return new PageImpl<>(responseDTOS.subList(start, end), pageable, responseDTOS.size());
-        } else {
-            return new PageImpl<>(responseDTOS, pageable, responseDTOS.size());
-        }
+        return responseService.getResponsesByOwner(userDetails.getUsername(), pageable);
     }
 
-    @PostMapping("/{id}")
-    public Response saveResponse(
-            @PathVariable Long id,
-            @RequestBody Map<Long, String> responseData,
-            Errors errors
-    ) throws Exception {
-        Response response = new Response();
-        Optional<User> owner = userRepository.findById(id);
-        if(owner.isPresent()) {
-            List<Field> fields = fieldsRepository.findAllByIdInAndOwner(responseData.keySet(), owner);
-            for (Field field : fields) {
-                response.getResponses().put(field, responseData.get(field.getId()));
-            }
-            return responseRepository.save(response);
-        } else {
-            throw new Exception("No such owner");
-        }
+    @PostMapping("/{ownerId}")
+    public ResponseDTO saveResponse(
+            @PathVariable long ownerId,
+            @RequestBody Map<Long, String> responseData
+    ) {
+        ResponseDTO responseDTO = ResponseDTO
+                .builder()
+                .responses(responseData)
+                .build();
+
+        ResponseDTO response = responseService.createResponse(ownerId, responseDTO);
+        messageSendingOperations.convertAndSend("/topic/responses", response);
+        return response;
     }
+
 }

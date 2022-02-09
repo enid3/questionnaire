@@ -1,36 +1,35 @@
 package com.github.enid3.questionnaire.controller.api.v1;
 
-import com.github.enid3.questionnaire.data.dto.ChangePasswordDTO;
-import com.github.enid3.questionnaire.data.entity.User;
-import com.github.enid3.questionnaire.data.repository.UserRepository;
+import com.github.enid3.questionnaire.data.dto.user.auth.ChangePasswordDTO;
+import com.github.enid3.questionnaire.data.dto.user.UserResponseDTO;
+import com.github.enid3.questionnaire.data.dto.user.UserUpdateDTO;
 import com.github.enid3.questionnaire.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/user")
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
-    UserService userService;
-    @Autowired
-    UserRepository userRepository;
+    private final UserService userService;
 
     @PutMapping
-    public String updateUserData(@RequestBody User newUserData,
-                                 @AuthenticationPrincipal UserDetails userDetails
+    public UserResponseDTO updateUserData(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody UserUpdateDTO userUpdateDTO
     ) {
-        return "" + userService.update(userDetails.getUsername(), newUserData);
+        return userService.updateUser(userDetails.getUsername(), userUpdateDTO);
     }
+
     @PostMapping("/changePassword")
     public String chanePassword(
             @RequestBody ChangePasswordDTO changePasswordDTO,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return "" + userService.changePassword(
+        return "" + userService.changeUserPassword(
                 userDetails.getUsername(),
-                changePasswordDTO.getOldPassword(),
                 changePasswordDTO.getNewPassword()
                 );
     }

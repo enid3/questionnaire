@@ -1,0 +1,188 @@
+databaseChangeLog:
+- changeSet:
+    id: 1644404058305-1
+    author: hd (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: response_pkey
+            name: id
+            type: BIGINT
+        tableName: response
+- changeSet:
+    id: 1644404058305-2
+    author: hd (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: response_values_pkey
+            name: response_id
+            type: BIGINT
+        - column:
+            name: value
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: response_values_pkey
+            name: field_id
+            type: BIGINT
+        tableName: response_values
+- changeSet:
+    id: 1644404058305-3
+    author: hd (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: field_pkey
+            name: id
+            type: BIGINT
+        - column:
+            name: is_active
+            type: BOOLEAN
+        - column:
+            name: is_required
+            type: BOOLEAN
+        - column:
+            name: label
+            type: VARCHAR(255)
+        - column:
+            name: type
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: owner_id
+            type: BIGINT
+        tableName: field
+- changeSet:
+    id: 1644404058305-4
+    author: hd (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: users_pkey
+            name: id
+            type: BIGINT
+        - column:
+            name: email
+            type: VARCHAR(255)
+        - column:
+            name: first_name
+            type: VARCHAR(30)
+        - column:
+            name: last_name
+            type: VARCHAR(30)
+        - column:
+            name: password
+            type: VARCHAR(255)
+        - column:
+            name: phone_number
+            type: VARCHAR(255)
+        tableName: users
+- changeSet:
+    id: 1644404058305-5
+    author: hd (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: field_id
+            type: BIGINT
+        - column:
+            name: options
+            type: VARCHAR(255)
+        tableName: field_options
+- changeSet:
+    id: 1644404058305-6
+    author: hd (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: response_id
+        baseTableName: response_values
+        constraintName: fkfadmw7ujeanb04rb41pse8psq
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: response
+        validate: true
+- changeSet:
+    id: 1644404058305-7
+    author: hd (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: field_id
+        baseTableName: response_values
+        constraintName: fkn4surc9fbwxfoluju0m804w0k
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: field
+        validate: true
+- changeSet:
+    id: 1644404058305-8
+    author: hd (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: owner_id
+        baseTableName: field
+        constraintName: fkh7q7fdmns2mttx623r2f0pniu
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+- changeSet:
+    id: 1644404058305-9
+    author: hd (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: field_id
+        baseTableName: field_options
+        constraintName: fkk6550cavkxasmhcxki1gw44gr
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: field
+        validate: true
+- changeSet:
+    id: 1644404058305-10
+    author: hd (generated)
+    changes:
+    - createSequence:
+        cacheSize: 1
+        cycle: false
+        dataType: bigint
+        incrementBy: 1
+        maxValue: 9223372036854775807
+        minValue: 1
+        sequenceName: hibernate_sequence
+        startValue: 1
+

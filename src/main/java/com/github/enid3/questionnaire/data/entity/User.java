@@ -13,19 +13,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank
     @Size(min=2, max=30)
     private String firstName;
-    @NotBlank
+
     @Size(min=2, max=30)
     private String lastName;
 
-    @NotNull
-    @Email
+    @JoinColumn(nullable = false)
     private String email;
 
-    @NotBlank
-    @Size(min=8, max=100)
+    @JoinColumn(nullable = false)
     private String password;
 
     private String phoneNumber;

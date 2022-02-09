@@ -1,36 +1,121 @@
 package com.github.enid3.questionnaire.service.impl;
 
+import com.github.enid3.questionnaire.data.dto.user.UserDTO;
+import com.github.enid3.questionnaire.data.dto.user.UserResponseDTO;
+import com.github.enid3.questionnaire.data.dto.user.UserUpdateDTO;
 import com.github.enid3.questionnaire.data.entity.User;
+import com.github.enid3.questionnaire.data.mapper.UserMapper;
 import com.github.enid3.questionnaire.data.repository.UserRepository;
 import com.github.enid3.questionnaire.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import com.github.enid3.questionnaire.service.exception.ServiceException;
+import com.github.enid3.questionnaire.service.exception.user.UserExceptionFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@Component
-@Slf4j
+@Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService, UserDetailsService {
-    private PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository) {
-        this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
+    private final UserMapper userMapper;
+    private final UserExceptionFactory userExceptionFactory;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private String encodePassword(String plainPassowrd) {
+        return passwordEncoder.encode(plainPassowrd);
+    }
+
+
+    @Override
+    public UserResponseDTO getUser(String email) {
+        Optional<User> optionalUser;
+        try {
+            optionalUser = userRepository.findByEmail(email);
+        }
+        catch (DataAccessException ex) {
+            throw new ServiceException(ex);
+        }
+        return optionalUser
+                .map(userMapper::toUserResponseDTO)
+                .orElseThrow(() -> userExceptionFactory.createUserNotFoundException(email));
+
+    }
+
+    @Override
+    public UserResponseDTO createUser(UserDTO userDTO) {
+        User user = userMapper.toUser(userDTO);
+        user.setId(null);
+        user.setPassword(encodePassword(user.getPassword()));
+
+        try {
+            User createdUser = userRepository.save(user);
+            return userMapper.toUserResponseDTO(createdUser);
+        }
+        catch (DataAccessException ex) {
+            throw new ServiceException(ex);
+        }
+    }
+
+    @Override
+    public UserResponseDTO updateUser(String email, UserUpdateDTO userUpdateDTO) {
+        try {
+            Optional<User> userOptional = userRepository.findByEmail(email);
+            User user = userOptional.orElseThrow(() -> userExceptionFactory.createUserNotFoundException(email));
+
+            userMapper.mergeUser(user, userUpdateDTO);
+            userRepository.save(user);
+
+            return userMapper.toUserResponseDTO(user);
+        }
+        catch (DataAccessException ex) {
+            throw new ServiceException(ex);
+        }
+    }
+
+    @Override
+    public boolean userExists(long id) {
+        try {
+            return userRepository.existsById(id);
+        }
+        catch (DataAccessException ex) {
+            throw new ServiceException(ex);
+        }
+    }
+
+    @Override
+    public boolean changeUserPassword(String email, String newPassword) {
+        try {
+            Optional<User> userOptional = userRepository.findByEmail(email);
+            User user = userOptional.orElseThrow(() -> userExceptionFactory.createUserNotFoundException(email));
+
+            user.setPassword(encodePassword(user.getPassword()));
+            userRepository.save(user);
+            return true;
+        }
+        catch (DataAccessException ex) {
+            throw new ServiceException(ex);
+        }
     }
 
     @Override
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if (user != null) {
+        try {
+            Optional<User> userOptional = userRepository.findByEmail(email);
+            User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User with email: '" + email + "' not found."));
+
             List<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
             return new org.springframework.security.core.userdetails.User(
@@ -39,58 +124,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     authorities
             );
         }
-        throw new UsernameNotFoundException("User with email: '" + email + "' not found.");
-    }
-
-    @Override
-    public boolean register(User user) {
-        User userFromDB = userRepository.findByEmail(user.getEmail());
-        if(userFromDB != null) {
-            return false;
+        catch (DataAccessException ex) {
+            throw new ServiceException(ex);
         }
-
-        /*
-        String message = String.format("Hello, %s!\n" +
-                "You have successfully registered on the site: http://localhost:8080/", user.getFirstName());
-        send(user.getEmail(), "Notification", message);
-         */
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        userRepository.save(user);
-
-        return true;
-    }
-
-    @Override
-    public boolean update(String email, User newUserData) {
-        User user = userRepository.findByEmail(email);
-        log.info("changing {}: {}",email, newUserData );
-        if(newUserData.getFirstName() != null)
-            user.setFirstName(newUserData.getFirstName());
-        if(newUserData.getLastName() != null)
-            user.setLastName(newUserData.getLastName());
-        if(newUserData.getEmail() != null)
-            user.setEmail(newUserData.getEmail());
-        if(newUserData.getPhoneNumber() != null)
-            user.setPhoneNumber(newUserData.getPhoneNumber());
-
-        userRepository.save(user);
-
-        return true;
-    }
-
-    @Override
-    public boolean changePassword(String email, String oldPassword, String newPassword) {
-        User user = userRepository.findByEmail(email);
-        if (user != null) {
-            if(passwordEncoder.matches(oldPassword, user.getPassword())) {
-                user.setPassword(passwordEncoder.encode(newPassword));
-                userRepository.save(user);
-                return true;
-            }
-        }
-        throw new UsernameNotFoundException("User with email: '" + email + "' not found.");
     }
 }
-

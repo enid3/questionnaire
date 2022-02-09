@@ -5,8 +5,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,23 +17,23 @@ public class Field {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
     @NotBlank
-    @Size(max=100)
+    @JoinColumn(nullable = false)
     private String label;
 
-    @NotNull
+    @JoinColumn(nullable = false)
     private Type type;
 
-    @NotNull
+    @JoinColumn(nullable = false)
     private Boolean isRequired = true;
-    @NotNull
+
+    @JoinColumn(nullable = false)
     private Boolean isActive = true;
 
 
-    @NotNull
     @ElementCollection(fetch = FetchType.LAZY)
     private Set<String> options = new HashSet<>();
 
