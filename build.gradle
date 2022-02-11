@@ -49,6 +49,7 @@ dependencies {
 	implementation 'org.hibernate:hibernate-validator:7.0.2.Final'
 	//implementation 'org.springframework:spring-websocket'
 	implementation 'org.springframework:spring-messaging'
+	implementation 'org.apache.tomcat:tomcat-jdbc'
 	///implementation('org.liquibase:liquibase-core')
 
 	//implementation 'org.liquibase:liquibase-core'
