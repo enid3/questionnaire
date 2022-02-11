@@ -5,6 +5,7 @@ import com.github.enid3.questionnaire.data.dto.user.UserResponseDTO;
 import com.github.enid3.questionnaire.data.dto.user.UserUpdateDTO;
 import com.github.enid3.questionnaire.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,7 @@ public class UserController {
         return userService.updateUser(userDetails.getUsername(), userUpdateDTO);
     }
 
+    @PreAuthorize("@A.mayUpdateUserPassword(#userDetails.username, #changePasswordDTO.oldPassword)")
     @PostMapping("/changePassword")
     public String chanePassword(
             @RequestBody ChangePasswordDTO changePasswordDTO,

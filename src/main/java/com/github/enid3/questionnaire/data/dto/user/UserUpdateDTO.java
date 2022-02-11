@@ -1,23 +1,29 @@
 package com.github.enid3.questionnaire.data.dto.user;
 
-import com.github.enid3.questionnaire.data.dto.user.validation.Email;
-import com.github.enid3.questionnaire.data.dto.user.validation.FirstName;
-import com.github.enid3.questionnaire.data.dto.user.validation.LastName;
-import com.github.enid3.questionnaire.data.dto.user.validation.PhoneNumber;
 import lombok.Builder;
 import lombok.Data;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+import static com.github.enid3.questionnaire.data.dto.user.validation.UserValidationConstraints.*;
 
 @Data
 @Builder
 public class UserUpdateDTO {
-    @FirstName
+    @Size(min = MIN_FIRST_NAME_LENGTH,
+            max = MAX_FIRST_NAME_LENGTH,
+            message = "{user.validation-message.first-name-size}")
     private String firstName;
-    @LastName
+    @Size(min = MIN_SECOND_NAME_LENGTH,
+            max = MAX_SECOND_NAME_LENGTH,
+            message = "{user.validation-message.second-name-size}")
     private String lastName;
 
-    @Email
+    @Email(message = "{user.validation-message.email}")
     private String email;
 
-    @PhoneNumber
+    @Pattern(regexp="(^$|[0-9]{10})", message = "{user.validation-message.phone-number}")
     private String phoneNumber;
 }

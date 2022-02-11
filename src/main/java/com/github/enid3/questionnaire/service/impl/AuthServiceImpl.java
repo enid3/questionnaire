@@ -1,9 +1,9 @@
 package com.github.enid3.questionnaire.service.impl;
 
+import com.github.enid3.questionnaire.data.dto.user.UserResponseDTO;
 import com.github.enid3.questionnaire.data.dto.user.auth.AuthDTO;
 import com.github.enid3.questionnaire.data.dto.user.auth.AuthSuccessDTO;
 import com.github.enid3.questionnaire.data.dto.user.auth.RegisterDTO;
-import com.github.enid3.questionnaire.data.dto.user.UserResponseDTO;
 import com.github.enid3.questionnaire.data.mapper.UserMapper;
 import com.github.enid3.questionnaire.security.jwt.JwtTokenProvider;
 import com.github.enid3.questionnaire.service.AuthService;

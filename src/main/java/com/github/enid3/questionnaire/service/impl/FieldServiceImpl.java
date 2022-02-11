@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -75,7 +74,6 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
-    @PreAuthorize("A.mayUpdateField(principal, #id)")
     public FieldDTO updateField(long id, FieldUpdateDTO fieldUpdateDTO) {
         try {
             Optional<Field> fieldOptional = fieldsRepository.findById(id);
@@ -93,7 +91,6 @@ public class FieldServiceImpl implements FieldService {
 
     @Override
     @Transactional
-    @PreAuthorize("A.mayUpdateField(principal, #id)")
     public void deleteField(long id) {
         int deleted;
         try {

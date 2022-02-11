@@ -27,6 +27,7 @@ public class FieldController {
             @AuthenticationPrincipal UserDetails userDetails,
             Pageable pageable
     ) {
+        //throw new ServiceException("some message");
         return fieldService.getAllFieldsByOwner(userDetails.getUsername(), pageable);
     }
 
@@ -45,7 +46,7 @@ public class FieldController {
         return fieldService.createField(userDetails.getUsername(), fieldDTO);
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     public FieldDTO updateField(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable long id,

@@ -11,4 +11,5 @@ public interface ResponseService {
 
     Page<ResponseDTO> getResponsesByOwner(String ownerEmail, Pageable pageable);
 
+    boolean deleteResponseByFieldId(long id);
 }

@@ -10,6 +10,7 @@ import com.github.enid3.questionnaire.service.UserService;
 import com.github.enid3.questionnaire.service.exception.ServiceException;
 import com.github.enid3.questionnaire.service.exception.user.UserExceptionFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
@@ -100,7 +102,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             Optional<User> userOptional = userRepository.findByEmail(email);
             User user = userOptional.orElseThrow(() -> userExceptionFactory.createUserNotFoundException(email));
 
-            user.setPassword(encodePassword(user.getPassword()));
+            user.setPassword(encodePassword(newPassword));
+
             userRepository.save(user);
             return true;
         }

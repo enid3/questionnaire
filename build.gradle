@@ -31,12 +31,9 @@ dependencies {
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
 
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	//implementation 'org.springframework.boot:spring-boot-starter-messaging'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	//implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
-	implementation 'org.thymeleaf:thymeleaf'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
@@ -52,9 +49,9 @@ dependencies {
 	implementation 'org.hibernate:hibernate-validator:7.0.2.Final'
 	//implementation 'org.springframework:spring-websocket'
 	implementation 'org.springframework:spring-messaging'
-	implementation('org.liquibase:liquibase-core')
+	///implementation('org.liquibase:liquibase-core')
 
-	//implementation 'org.liquibase:liquibase-core'
+	implementation 'org.liquibase:liquibase-core'
 }
 
 test {
