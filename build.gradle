@@ -6,8 +6,11 @@ plugins {
 }
 
 group = 'com.github.enid3'
+
+archivesBaseName = "app"
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+
 
 configurations {
 	compileOnly {
