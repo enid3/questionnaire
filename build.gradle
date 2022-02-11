@@ -53,8 +53,8 @@ dependencies {
 	//implementation 'org.springframework:spring-websocket'
 	implementation 'org.springframework:spring-messaging'
 	///implementation('org.liquibase:liquibase-core')
+	implementation 'org.liquibase:liquibase-core'
 
-	//implementation 'org.liquibase:liquibase-core'
 }
 
 test {
