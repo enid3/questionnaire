@@ -8,12 +8,14 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface FieldMapper {
-    Field toFieldDTO(FieldDTO fieldDTO);
+
+    @Mapping(target = "questionnaire", ignore = true)
+    Field toField(FieldDTO fieldDTO);
     FieldDTO toFieldDTO(Field field);
     FieldLabelDTO toFieldLabelDTO(Field field);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "owner", ignore = true)
+    @Mapping(target = "questionnaire", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void mergeField(@MappingTarget Field field, FieldUpdateDTO fieldUpdateDTO);
 }

@@ -10,6 +10,6 @@ public interface UserService {
     UserResponseDTO getUser(String email);
     UserResponseDTO createUser(UserDTO userDTO);
     UserResponseDTO updateUser(String email, UserUpdateDTO userUpdateDTO);
-    boolean userExists(long id);
     boolean changeUserPassword(String email, String newPassword);
+    boolean userExists(long id);
 }

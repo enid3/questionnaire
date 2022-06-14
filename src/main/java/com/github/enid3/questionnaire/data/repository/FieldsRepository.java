@@ -8,11 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface FieldsRepository extends JpaRepository<Field, Long> {
-    Page<Field> findAllByOwnerEmail(String ownerEmail, Pageable pageable);
-    List<Field> findAllByOwnerEmailAndIsActive(String ownerEmail, Boolean isActive);
-    List<Field> findByIsActiveAndOwnerId(Boolean isActive, Long ownerId);
+    Page<Field> findAllByQuestionnaireId(Long questionnaireId, Pageable pageable);
+    List<Field> findAllByQuestionnaireIdAndIsActive(Long questionnaireId, Boolean isActive);
+    List<Field> findByIsActiveAndQuestionnaireId(Boolean isActive, Long questionnaire);
 
-    boolean existsByIdAndOwnerEmail(Long id, String ownerEmail);
+    boolean existsByIdAndQuestionnaireId(Long id, Long questionnaireId);
 
-    int deleteFieldById(Long id);
+    long deleteFieldById(Long id);
 }

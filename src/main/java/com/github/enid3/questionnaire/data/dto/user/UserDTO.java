@@ -1,27 +1,41 @@
 package com.github.enid3.questionnaire.data.dto.user;
 
 import com.github.enid3.questionnaire.data.dto.IdentifiableDTO;
-import com.github.enid3.questionnaire.data.dto.user.validation.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+import static com.github.enid3.questionnaire.data.dto.user.validation.UserConstraints.*;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO extends IdentifiableDTO {
-    @FirstName
+    @Size(min = MIN_FIRST_NAME_LENGTH,
+            max = MAX_FIRST_NAME_LENGTH,
+            message = "{user.validation-message.first-name-size}")
     private String firstName;
 
-    @LastName
+    @Size(min = MIN_LAST_NAME_LENGTH,
+            max = MAX_LAST_NAME_LENGTH,
+            message = "{user.validation-message.second-name-size}")
     private String lastName;
 
     @NotNull(message = "{auth.validation-message.email-not-empty}")
-    @Email
+    @Email(message = "{user.validation-message.email}")
     private String email;
 
     @NotNull(message = "{auth.validation-message.pass-not-empty}")
-    @Password
+    @Size(min = MIN_PASS_LENGTH, max = MAX_PASS_LENGTH, message = "{user.validation-message.pass-size}")
     private String password;
 
-    @PhoneNumber
+    @Pattern(regexp="(^$|[0-9]{10})", message = "{user.validation-message.phone-number}")
     private String phoneNumber;
 }

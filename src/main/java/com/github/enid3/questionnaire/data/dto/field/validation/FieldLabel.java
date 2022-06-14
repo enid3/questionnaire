@@ -10,8 +10,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Pattern(regexp = "^[^\\n]*", message = "{field.validation-message.label-single-line}")
-@Size(min = FieldValidationConstraints.MIN_LABEL_SIZE,
-        max = FieldValidationConstraints.MAX_LABEL_SIZE,
+@Size(min = FieldConstraints.MIN_LABEL_SIZE,
+        max = FieldConstraints.MAX_LABEL_SIZE,
         message = "{field.validation-message.label-size}")
 public @interface FieldLabel {
 }

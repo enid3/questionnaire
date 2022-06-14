@@ -6,8 +6,11 @@ plugins {
 }
 
 group = 'com.github.enid3'
+
+archivesBaseName = "app"
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+
 
 configurations {
 	compileOnly {
@@ -18,6 +21,7 @@ configurations {
 repositories {
 	mavenCentral()
 }
+
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -31,30 +35,32 @@ dependencies {
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
 
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	//implementation 'org.springframework.boot:spring-boot-starter-messaging'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	//implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
-	implementation 'org.thymeleaf:thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'org.postgresql:postgresql'
+	implementation 'org.postgresql:postgresql'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
 
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'javax.validation:validation-api'
 	implementation 'org.hibernate:hibernate-validator:7.0.2.Final'
 	//implementation 'org.springframework:spring-websocket'
 	implementation 'org.springframework:spring-messaging'
-	implementation('org.liquibase:liquibase-core')
-
 	//implementation 'org.liquibase:liquibase-core'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
+	implementation 'org.springdoc:springdoc-openapi-security:1.6.6'
+	implementation('org.springframework.boot:spring-boot-starter-validation')
+
+	testImplementation 'com.h2database:h2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 }
 
 test {

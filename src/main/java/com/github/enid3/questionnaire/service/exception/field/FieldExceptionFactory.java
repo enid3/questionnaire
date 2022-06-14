@@ -1,22 +1,32 @@
 package com.github.enid3.questionnaire.service.exception.field;
 
-import lombok.RequiredArgsConstructor;
+import com.github.enid3.questionnaire.service.exception.AbstractExceptionFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
 @Component
-@RequiredArgsConstructor
-public class FieldExceptionFactory {
-    private final MessageSource messageSource;
+public class FieldExceptionFactory extends AbstractExceptionFactory {
+
+    public FieldExceptionFactory(MessageSource messageSource, Locale locale) {
+        super(messageSource, locale);
+    }
 
     public InvalidFieldException createNotFoundException(long id) {
         String message = messageSource.getMessage(
-                "field.exception.not-found",
+                "field.exception.questionnaire-not-found",
                 new Long[] { id },
-                Locale.ROOT);
+                locale);
 
         return new InvalidFieldException(message, InvalidFieldException.Reason.NOT_FOUND, id);
+    }
+    public InvalidFieldException createQuestionnaireNotFoundException(long id) {
+        String message = messageSource.getMessage(
+                "field.exception.questionnaire-not-found",
+                new Long[] { id },
+                locale);
+
+        return new InvalidFieldException(message, InvalidFieldException.Reason.QUESTIONNAIRE_NOT_FOUND, id);
     }
 }

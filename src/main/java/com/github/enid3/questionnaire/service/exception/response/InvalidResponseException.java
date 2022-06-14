@@ -16,7 +16,8 @@ public class InvalidResponseException extends ServiceException {
     }
 
     public enum Reason {
-        USER_NOT_FOUND,
+        NOT_FOUND,
+        QUESTIONNAIRE_NOT_FOUND,
         REQUIRED_FIELD_NOT_PROVIDED,
         RESPONSE_TO_INVALID_FIELD,
         EMPTY_RESPONSE

@@ -6,8 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static com.github.enid3.questionnaire.data.dto.user.validation.UserValidationConstraints.MAX_FIRST_NAME_LENGTH;
-import static com.github.enid3.questionnaire.data.dto.user.validation.UserValidationConstraints.MIN_FIRST_NAME_LENGTH;
+import static com.github.enid3.questionnaire.data.dto.user.validation.UserConstraints.MAX_FIRST_NAME_LENGTH;
+import static com.github.enid3.questionnaire.data.dto.user.validation.UserConstraints.MIN_FIRST_NAME_LENGTH;
 
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

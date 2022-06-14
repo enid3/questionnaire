@@ -1,23 +1,34 @@
 package com.github.enid3.questionnaire.service.exception.user;
 
-import lombok.RequiredArgsConstructor;
+import com.github.enid3.questionnaire.service.exception.AbstractExceptionFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
 @Component
-@RequiredArgsConstructor
-public class UserExceptionFactory {
-    private final MessageSource messageSource;
+public class UserExceptionFactory extends AbstractExceptionFactory {
+
+    public UserExceptionFactory(MessageSource messageSource, Locale locale) {
+        super(messageSource, locale);
+    }
 
     public InvalidUserException createUserNotFoundException(String email) {
         String message = messageSource.getMessage(
                 "user.exception.user-not-found",
                 new String[] { email },
-                Locale.ROOT);
+                locale);
 
-        return new InvalidUserException(message, InvalidUserException.Reason.USER_NOT_FOUND, 0l);
+        return new InvalidUserException(message, InvalidUserException.Reason.USER_NOT_FOUND, email);
+    }
+
+    public InvalidUserException createUserEmailAlreadyInUsException(String email) {
+        String message = messageSource.getMessage(
+                "user.exception.email-already-in-use",
+                new String[] { email },
+                locale);
+
+        return new InvalidUserException(message, InvalidUserException.Reason.USER_EMAIL_ALREADY_IN_USE, email);
     }
 
 }

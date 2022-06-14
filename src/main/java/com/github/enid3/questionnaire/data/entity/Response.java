@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,9 +22,20 @@ public class Response {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "response_values")
-    @Column(name="value")
+    @ManyToOne
+    @NotNull
+    @JoinColumn(name="questionnaire_id", nullable = false)
+    private Questionnaire questionnaire;
+
+    @Builder.Default
+    @ElementCollection
+    @CollectionTable(
+            name = "response_values",
+            joinColumns = @JoinColumn(name="response_id")
+    )
     @MapKeyJoinColumn(name = "field_id")
+    @Column(name="value")
+    @JoinColumn(name = "response_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Map<Field, String> responses = new HashMap<>();
 }
