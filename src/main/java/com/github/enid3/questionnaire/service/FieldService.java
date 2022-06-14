@@ -12,10 +12,11 @@ import java.util.List;
 
 @Validated
 public interface FieldService {
-    FieldDTO createField(String ownerEmail, @Valid FieldDTO fieldDTO);
+    FieldDTO createField(long questionnaireId, @Valid FieldDTO fieldDTO);
 
-    Page<FieldDTO> getAllFieldsByOwner(String ownerEmail, Pageable pageable);
-    List<FieldLabelDTO> getAllLabelsByOwner(String ownerEmail);
+    Page<FieldDTO> getAllFieldsByQuestionnaire(long questionnaireId, Pageable pageable);
+    List<FieldLabelDTO> getAllActiveFieldLabelsByQuestionnaire(long questionnaireId);
+    List<FieldDTO> getAllActiveFieldsByQuestionnaire(long questionnaireId);
 
     FieldDTO updateField(long id, @Validated FieldUpdateDTO fieldUpdateDTO);
 

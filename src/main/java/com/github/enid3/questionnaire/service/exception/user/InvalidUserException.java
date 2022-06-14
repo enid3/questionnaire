@@ -7,15 +7,16 @@ public class InvalidUserException extends ServiceException {
     @Getter
     private Reason reason;
     @Getter
-    private Long id;
+    private String email;
 
-    public InvalidUserException(String message, Reason reason, Long id) {
+
+    public InvalidUserException(String message, Reason reason, String email) {
         super(message);
         this.reason = reason;
-        this.id = id;
+        this.email = email;
     }
 
     public enum Reason {
-        USER_NOT_FOUND,
+        USER_NOT_FOUND, USER_EMAIL_ALREADY_IN_USE
     }
 }

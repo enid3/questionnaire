@@ -16,6 +16,6 @@ public class InvalidFieldException extends ServiceException {
     }
 
     public enum Reason {
-        NOT_FOUND
+        NOT_FOUND, QUESTIONNAIRE_NOT_FOUND
     }
 }

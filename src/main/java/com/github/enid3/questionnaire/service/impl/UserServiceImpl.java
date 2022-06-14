@@ -60,6 +60,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user = userMapper.toUser(userDTO);
         user.setId(null);
         user.setPassword(encodePassword(user.getPassword()));
+        if(userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw userExceptionFactory.createUserEmailAlreadyInUsException(user.getEmail());
+        }
 
         try {
             User createdUser = userRepository.save(user);
@@ -86,15 +89,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Override
-    public boolean userExists(long id) {
-        try {
-            return userRepository.existsById(id);
-        }
-        catch (DataAccessException ex) {
-            throw new ServiceException(ex);
-        }
-    }
 
     @Override
     public boolean changeUserPassword(String email, String newPassword) {
@@ -110,6 +104,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         catch (DataAccessException ex) {
             throw new ServiceException(ex);
         }
+    }
+
+    @Override
+    public boolean userExists(long id) {
+        return userRepository.existsById(id);
     }
 
     @Override

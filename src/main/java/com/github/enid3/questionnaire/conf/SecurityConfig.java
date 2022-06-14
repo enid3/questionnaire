@@ -12,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableWebSecurity
 @Slf4j
 public class SecurityConfig {
     @Bean
@@ -38,12 +40,11 @@ public class SecurityConfig {
                         .antMatchers(HttpMethod.GET, "/js/**").permitAll()
                         .antMatchers(HttpMethod.GET, "/fonts/**").permitAll()
                         .antMatchers(HttpMethod.GET, "/css/**").permitAll()
+                        .antMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
                         .antMatchers("/api/v1/auth/*").permitAll()
                         .antMatchers("/api/v1/questionnaire/*").permitAll()
                         .antMatchers(HttpMethod.POST,"/api/v1/response/*").permitAll()
                         .antMatchers("/api/v1/**").hasRole("USER")
-                        //.antMatchers(HttpMethod.DELETE, "/vehicles/**").hasRole("ADMIN")
-                        //.antMatchers(HttpMethod.GET, "/v1/vehicles/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtTokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
@@ -73,5 +74,4 @@ public class SecurityConfig {
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

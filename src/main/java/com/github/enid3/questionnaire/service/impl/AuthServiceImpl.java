@@ -9,9 +9,10 @@ import com.github.enid3.questionnaire.security.jwt.JwtTokenProvider;
 import com.github.enid3.questionnaire.service.AuthService;
 import com.github.enid3.questionnaire.service.UserService;
 import com.github.enid3.questionnaire.service.exception.ServiceException;
+import com.github.enid3.questionnaire.service.exception.user.auth.AuthExceptionFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
     private final UserMapper userMapper;
+    private final AuthExceptionFactory authExceptionFactory;
 
     private String authenticate(String email, String password) {
         var authentication = authenticationManager.authenticate(
@@ -43,8 +45,8 @@ public class AuthServiceImpl implements AuthService {
                     .user(user)
                     .token(token)
                     .build();
-        } catch (AuthenticationException | ServiceException ex ) {
-            throw new BadCredentialsException("Invalid username/password supplied");
+        } catch (AuthenticationException ex) {
+            throw authExceptionFactory.createInvalidCredentialsException();
         }
     }
 
@@ -60,8 +62,8 @@ public class AuthServiceImpl implements AuthService {
                     .token(token)
                     .build();
         }
-        catch (ServiceException ex) {
-            throw new BadCredentialsException("Failed to register", ex);
+        catch (DataAccessException ex) {
+            throw new ServiceException(ex);
         }
     }
 }

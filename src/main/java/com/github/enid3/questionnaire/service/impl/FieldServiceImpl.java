@@ -4,10 +4,11 @@ import com.github.enid3.questionnaire.data.dto.field.FieldDTO;
 import com.github.enid3.questionnaire.data.dto.field.FieldLabelDTO;
 import com.github.enid3.questionnaire.data.dto.field.FieldUpdateDTO;
 import com.github.enid3.questionnaire.data.entity.Field;
+import com.github.enid3.questionnaire.data.entity.Questionnaire;
 import com.github.enid3.questionnaire.data.mapper.FieldMapper;
 import com.github.enid3.questionnaire.data.repository.FieldsRepository;
 import com.github.enid3.questionnaire.service.FieldService;
-import com.github.enid3.questionnaire.service.OwnershipService;
+import com.github.enid3.questionnaire.service.QuestionnaireService;
 import com.github.enid3.questionnaire.service.exception.ServiceException;
 import com.github.enid3.questionnaire.service.exception.field.FieldExceptionFactory;
 import lombok.RequiredArgsConstructor;
@@ -29,16 +30,18 @@ public class FieldServiceImpl implements FieldService {
     private final FieldMapper fieldMapper;
     private final FieldExceptionFactory fieldExceptionFactory;
 
-    private final OwnershipService ownershipService;
+    private final QuestionnaireService questionnaireService;
 
 
     @Override
     @Transactional
-    public FieldDTO createField(String ownerEmail, FieldDTO fieldDTO) {
-        Field field = fieldMapper.toFieldDTO(fieldDTO);
+    public FieldDTO createField(long questionnaireId, FieldDTO fieldDTO) {
+        Field field = fieldMapper.toField(fieldDTO);
         field.setId(null);
         try {
-            ownershipService.setOwner(ownerEmail, field);
+            Questionnaire questionnaire = new Questionnaire();
+            questionnaire.setId(questionnaireId);
+            field.setQuestionnaire(questionnaire);
             Field savedField = fieldsRepository.save(field);
             return fieldMapper.toFieldDTO(savedField);
         }
@@ -48,11 +51,16 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
-    public Page<FieldDTO> getAllFieldsByOwner(String ownerEmail, Pageable pageable) {
+    public Page<FieldDTO> getAllFieldsByQuestionnaire(long questionnaireId, Pageable pageable) {
         try {
-            return fieldsRepository
-                    .findAllByOwnerEmail(ownerEmail, pageable)
-                    .map(fieldMapper::toFieldDTO);
+            boolean isQuestionnaireExists = questionnaireService.questionnaireExists(questionnaireId);
+            if(isQuestionnaireExists) {
+                return fieldsRepository
+                        .findAllByQuestionnaireId(questionnaireId, pageable)
+                        .map(fieldMapper::toFieldDTO);
+            } else {
+                throw fieldExceptionFactory.createQuestionnaireNotFoundException(questionnaireId);
+            }
         }
         catch (DataAccessException ex) {
             throw new ServiceException(ex);
@@ -60,13 +68,37 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
-    public List<FieldLabelDTO> getAllLabelsByOwner(String ownerEmail) {
+    public List<FieldLabelDTO> getAllActiveFieldLabelsByQuestionnaire(long questionnaireId) {
         try {
-            return fieldsRepository
-                    .findAllByOwnerEmailAndIsActive(ownerEmail, true)
-                    .stream()
-                    .map(fieldMapper::toFieldLabelDTO)
-                    .collect(Collectors.toList());
+            boolean isQuestionnaireExists = questionnaireService.questionnaireExists(questionnaireId);
+            if(isQuestionnaireExists) {
+                return fieldsRepository
+                        .findAllByQuestionnaireIdAndIsActive(questionnaireId, true)
+                        .stream()
+                        .map(fieldMapper::toFieldLabelDTO)
+                        .collect(Collectors.toList());
+            } else {
+                throw fieldExceptionFactory.createQuestionnaireNotFoundException(questionnaireId);
+            }
+        }
+        catch (DataAccessException ex) {
+            throw new ServiceException(ex);
+        }
+    }
+
+    @Override
+    public List<FieldDTO> getAllActiveFieldsByQuestionnaire(long questionnaireId) {
+        try {
+            boolean isQuestionnaireExists = questionnaireService.questionnaireExists(questionnaireId);
+            if(isQuestionnaireExists) {
+                return fieldsRepository
+                        .findAllByQuestionnaireIdAndIsActive(questionnaireId, true)
+                        .stream()
+                        .map(fieldMapper::toFieldDTO)
+                        .collect(Collectors.toList());
+            } else {
+                throw fieldExceptionFactory.createQuestionnaireNotFoundException(questionnaireId);
+            }
         }
         catch (DataAccessException ex) {
             throw new ServiceException(ex);
@@ -92,7 +124,7 @@ public class FieldServiceImpl implements FieldService {
     @Override
     @Transactional
     public void deleteField(long id) {
-        int deleted;
+        long deleted;
         try {
             deleted = fieldsRepository.deleteFieldById(id);
         }

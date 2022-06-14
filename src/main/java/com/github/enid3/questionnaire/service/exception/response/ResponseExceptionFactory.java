@@ -1,30 +1,41 @@
 package com.github.enid3.questionnaire.service.exception.response;
 
-import lombok.RequiredArgsConstructor;
+import com.github.enid3.questionnaire.service.exception.AbstractExceptionFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
 @Component
-@RequiredArgsConstructor
-public class ResponseExceptionFactory {
-    private final MessageSource messageSource;
+public class ResponseExceptionFactory extends AbstractExceptionFactory {
 
-    public InvalidResponseException createUserNotFoundException(long id) {
-        String message = messageSource.getMessage(
-                "response.exception.user-not-found",
-                new Long[] { id },
-                Locale.ROOT);
-
-        return new InvalidResponseException(message, InvalidResponseException.Reason.USER_NOT_FOUND, id);
+    public ResponseExceptionFactory(MessageSource messageSource, Locale locale) {
+        super(messageSource, locale);
     }
 
-    public InvalidResponseException createNoSuchFieldException(long fieldId) {
+    public InvalidResponseException createNotFoundException(long id) {
+        String message = messageSource.getMessage(
+                "response.exception.not-found",
+                new Long[] { id },
+                locale);
+
+        return new InvalidResponseException(message, InvalidResponseException.Reason.NOT_FOUND, id);
+    }
+
+    public InvalidResponseException createQuestionnaireNotFoundException(long id) {
+        String message = messageSource.getMessage(
+                "response.exception.questionnaire-not-found",
+                new Long[] { id },
+                locale);
+
+        return new InvalidResponseException(message, InvalidResponseException.Reason.QUESTIONNAIRE_NOT_FOUND, id);
+    }
+
+    public InvalidResponseException createRequiredFieldNotProvidedException(long fieldId) {
         String message = messageSource.getMessage(
                 "response.exception.required-not-provided",
                 new Long[] { fieldId },
-                Locale.ROOT);
+                locale);
 
         return new InvalidResponseException(message, InvalidResponseException.Reason.REQUIRED_FIELD_NOT_PROVIDED, fieldId);
     }
@@ -33,7 +44,7 @@ public class ResponseExceptionFactory {
         String message = messageSource.getMessage(
                 "response.exception.invalid-field-response",
                 new Long[] { fieldId },
-                Locale.ROOT);
+                locale);
 
         return new InvalidResponseException(message, InvalidResponseException.Reason.RESPONSE_TO_INVALID_FIELD, fieldId);
     }
@@ -42,7 +53,7 @@ public class ResponseExceptionFactory {
         String message = messageSource.getMessage(
                 "response.exception.empty",
                 null,
-                Locale.ROOT);
+                locale);
 
         return new InvalidResponseException(message, InvalidResponseException.Reason.EMPTY_RESPONSE, null);
     }

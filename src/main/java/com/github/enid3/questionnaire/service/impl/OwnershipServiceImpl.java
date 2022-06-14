@@ -1,6 +1,6 @@
 package com.github.enid3.questionnaire.service.impl;
 
-import com.github.enid3.questionnaire.data.entity.Field;
+import com.github.enid3.questionnaire.data.entity.Questionnaire;
 import com.github.enid3.questionnaire.data.entity.User;
 import com.github.enid3.questionnaire.data.repository.UserRepository;
 import com.github.enid3.questionnaire.service.OwnershipService;
@@ -23,11 +23,11 @@ public class OwnershipServiceImpl implements OwnershipService {
 
     @Override
     @Transactional
-    public void setOwner(String email, Field field) {
+    public void setOwner(String email, Questionnaire questionnaire) {
         try {
             Optional<User> ownerOptional = userRepository.findByEmail(email);
             User owner = ownerOptional.orElseThrow(() -> userExceptionFactory.createUserNotFoundException(email));
-            field.setOwner(owner);
+            questionnaire.setOwner(owner);
         }
         catch (DataAccessException ex) {
             throw new ServiceException(ex);

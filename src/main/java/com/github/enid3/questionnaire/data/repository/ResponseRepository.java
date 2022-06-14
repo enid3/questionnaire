@@ -11,11 +11,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ResponseRepository extends JpaRepository<Response, Long> {
-    @Query(value = "select DISTINCT(r) from Response r join r.responses resp  where (key(resp).owner.email = :ownerEmail)")
-    Page<Response> findDistinctByFieldOwnerEmail(@Param("ownerEmail") String ownerEmail, Pageable pageable);
+    @Query(value = "select DISTINCT(r) from Response r join r.responses resp  where (key(resp).questionnaire.id = :questionnaireId)")
+    Page<Response> findDistinctByQuestionnaireId(@Param("questionnaireId") long questionnaireId, Pageable pageable);
 
     @Query(value = "select DISTINCT(r) from Response r join r.responses resp  where (key(resp).id= :id)")
     List<Response> findDistinctByFieldId(@Param("id") long id);
 
     long deleteAllByIdIn(List<Long> ids);
+    long deleteResponseById(Long id);
 }

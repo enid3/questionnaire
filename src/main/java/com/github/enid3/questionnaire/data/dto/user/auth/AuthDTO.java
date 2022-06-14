@@ -9,8 +9,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import static com.github.enid3.questionnaire.data.dto.user.validation.UserValidationConstraints.MAX_PASS_LENGTH;
-import static com.github.enid3.questionnaire.data.dto.user.validation.UserValidationConstraints.MIN_PASS_LENGTH;
+import static com.github.enid3.questionnaire.data.dto.user.validation.UserConstraints.MAX_PASS_LENGTH;
+import static com.github.enid3.questionnaire.data.dto.user.validation.UserConstraints.MIN_PASS_LENGTH;
 
 @Data
 @Builder

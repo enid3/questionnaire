@@ -16,6 +16,6 @@ public class InvalidQuestionnaireException extends ServiceException {
     }
 
     public enum Reason {
-        USER_NOT_FOUND, NO_ACTIVE_FIELDS
+        USER_NOT_FOUND, NO_ACTIVE_FIELDS, NOT_FOUND
     }
 }

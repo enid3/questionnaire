@@ -7,9 +7,10 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 public interface ResponseService {
-    ResponseDTO createResponse(long ownerId, ResponseDTO responseDTO);
+    ResponseDTO createResponse(long questionnaireId, ResponseDTO responseDTO);
 
-    Page<ResponseDTO> getResponsesByOwner(String ownerEmail, Pageable pageable);
+    Page<ResponseDTO> getResponsesByQuestionnaire(long questionnaireId, Pageable pageable);
 
     boolean deleteResponseByFieldId(long id);
+    void deleteResponse(long id);
 }
